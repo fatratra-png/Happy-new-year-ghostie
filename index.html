@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bonne année Itsuki 🎉</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(180deg, #ffafbd, #ffc3a0);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", sans-serif;
+            transition: background 1.5s ease;
+        }
+
+        .night {
+            background: radial-gradient(#0c1022, #02030a);
+        }
+
+        .card {
+            text-align: center;
+            color: #fff;
+            padding: 25px 30px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            margin: 0 0 10px;
+        }
+
+        .typed {
+            font-size: 1.3rem;
+            min-height: 90px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 18px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            background: #fff;
+            margin-left: 4px;
+            animation: blink 0.9s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        button {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            background: #fff;
+            color: #ff6e7f;
+            font-weight: 600;
+            transition: .2s;
+            display: none;
+            /* ← caché au départ */
+        }
+
+        button.show {
+            display: inline-block;
+            animation: pop .4s ease forwards;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confetti,
+        .ghost {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .ghost {
+            font-size: 2.2rem;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="fireworks"></canvas>
+
+    <div class="card">
+        <h1>Bonne année, Itsuki ✨</h1>
+        <div class="typed" id="typedText"></div>
+        <button id="btnFire">Clique ici 🎆</button>
+    </div>
+
+    <script>
+        // ----- TEXTE ANIMÉ -----
+        const text =
+            "Je te souhaite une année douce,\n" +
+            "remplie de belles surprises,\n" +
+            "beaucoup de rires et d'emmerdements by Spicy hihi…\n\n" +
+            "et un peu de magie aussi et moins d'alcool(sauf avec moi)✨\n\n" +
+            "(De enga anie zah lay mampi-fell faha-3 satria hoe la troisième fois sera la bonne ono lol 😏😂)";
+
+        const typedEl = document.getElementById("typedText");
+        const btn = document.getElementById("btnFire");
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                typedEl.innerHTML = text.slice(0, index) + '<span class="cursor"></span>';
+                index++;
+                setTimeout(type, 45);
+            } else {
+                typedEl.innerHTML = text;
+
+                // 👉 bouton apparaît seulement à la fin
+                btn.classList.add("show");
+            }
+        }
+        type();
+
+        // ----- CONFETTIS -----
+        const colors = ['#FFC0CB', '#FFD700', '#ADFF2F', '#00BFFF', '#FF69B4', '#FF4500'];
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.top = '-20px';
+            confetti.style.borderRadius = '50%';
+            confetti.style.opacity = .9;
+            document.body.appendChild(confetti);
+
+            let falling = setInterval(() => {
+                let top = parseFloat(confetti.style.top);
+                confetti.style.top = top + 3 + 'px';
+                confetti.style.left = parseFloat(confetti.style.left) + Math.sin(top / 10) * 2 + 'px';
+                if (top > window.innerHeight) {
+                    clearInterval(falling);
+                    confetti.remove();
+                }
+            }, 16);
+        }
+
+        // ----- FANTÔMES -----
+        function createGhost() {
+            const ghost = document.createElement('div');
+            ghost.classList.add('ghost');
+            ghost.innerText = '👻';
+            ghost.style.left = Math.random() * window.innerWidth + 'px';
+            ghost.style.top = '-60px';
+            document.body.appendChild(ghost);
+
+            let falling = setInterval(() => {
+                let top = parseFloat(ghost.style.top);
+                ghost.style.top = top + 2 + 'px';
+                ghost.style.left = parseFloat(ghost.style.left) + Math.sin(top / 15) * 3 + 'px';
+
+                if (top > window.innerHeight) {
+                    clearInterval(falling);
+                    ghost.remove();
+                }
+            }, 16);
+        }
+
+        setInterval(createConfetti, 110);
+        setInterval(createGhost, 1700);
+
+        // ----- FEU D’ARTIFICE -----
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        let particles = [];
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x,
+                    y,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 4 + 2,
+                    life: Math.random() * 45 + 30,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((p, i) => {
+                p.life--;
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed + 0.05 * (60 - p.life);
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ----- BOUTON : nuit + feu d’artifice -----
+        btn.addEventListener("click", () => {
+            document.body.classList.add("night");
+
+            // plusieurs explosions — BAM BAM BAM 🎆
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height * 0.5 + 80;
+                    createFirework(x, y);
+                }, i * 500);
+            }
+        });
+    </script>
+</body>
+
+</html>
